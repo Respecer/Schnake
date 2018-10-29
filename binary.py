@@ -70,6 +70,8 @@ def main(speed, score):
         snake.move(direction[0], direction[1])
         if snake.rectPoint[0] < 0 or snake.rectPoint[0] > 400 or snake.rectPoint[1] < 0 or snake.rectPoint[1] > 400:
             gameOver = True
+        if selfCollision(snake, snakeChain) == True:
+            gameOver = True
         screen.blit(snake.image, snake.rectPoint)
         screen.blit(seperator.image, seperator.rectPoint)
         scoreUp(score)
@@ -214,9 +216,12 @@ def scoreUp(score):
     TextRectSchcoreValue.centery = (435)
     screen.blit(TextSurfSchcore, TextRectSchcore)
     screen.blit(TextSurfSchcoreValue, TextRectSchcoreValue)
-def selfCollision():
-    for part in snakeChain
-    
+
+def selfCollision(snake, snakeChain):
+    for part in snakeChain:
+        if snake.rectPoint[0] == part.rectPoint[0] and snake.rectPoint[1] == part.rectPoint[1]:
+            return True
+
 while 1:
     mode = gameIntro()
     if mode is not None:
