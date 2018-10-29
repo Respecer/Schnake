@@ -1,5 +1,5 @@
 import sys, pygame
-import Snake, Food, Cursor
+import Snake, Food, Cursor, DBConnect
 from random import randint
 from pygame.locals import *
 pygame.init()
@@ -221,7 +221,7 @@ def selfCollision(snake, snakeChain):
     for part in snakeChain:
         if snake.rectPoint[0] == part.rectPoint[0] and snake.rectPoint[1] == part.rectPoint[1]:
             return True
-
+connection = DBConnect.DBConnect("localhost", "schnake", "schnake", "schnake")
 while 1:
     mode = gameIntro()
     if mode is not None:
