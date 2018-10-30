@@ -77,6 +77,21 @@ def main(speed, score):
         scoreUp(score)
         pygame.display.update()
         if gameOver == True:
+            largeText = pygame.font.Font('freesansbold.ttf', 30)
+            TextSurfGO, TextRectGO = text_objects("Game Over", largeText)
+            TextRectGO.centerx = ((width / 2))
+            TextRectGO.centery = ((200))
+            screen.blit(TextSurfGO, TextRectGO)
+            pygame.display.update()
+            enter = False
+            while enter is not True:
+                for event in pygame.event.get():
+                    if event.type == pygame.QUIT:
+                        pygame.quit()
+                        quit()
+                    elif event.type == KEYDOWN:
+                        if event.key == 13:
+                            enter = True
             break
 def text_objects(text, font):
     textSurface = font.render(text, True, white)
@@ -90,7 +105,10 @@ def gameIntro():
     TextSurfSchettings, TextRectSchettings = text_objects("Schettings", largeText)
     TextRectSchettings.left = ((width / 4))
     TextRectSchettings.centery = ((height / 2))
-    menuPoints = ((TextSurfSchnake, TextRectSchnake, "Schnake"), (TextSurfSchettings, TextRectSchettings, "Schettings"))
+    TextSurfSchcoreboard, TextRectSchcoreboard = text_objects("Schcoreboard", largeText)
+    TextRectSchcoreboard.left = ((width / 4))
+    TextRectSchcoreboard.centery = ((height / 1.5))
+    menuPoints = ((TextSurfSchnake, TextRectSchnake, "Schnake"), (TextSurfSchettings, TextRectSchettings, "Schettings"), (TextSurfSchcoreboard, TextRectSchcoreboard, "Schcoreboard"))
     cursor = Cursor.Cursor(cursorImage, 10, 10, 25, 25)
     currentCursor = 0
     returnValue = None
@@ -121,6 +139,7 @@ def gameIntro():
         screen.blit(cursor.image, cursor.rectPoint)
         screen.blit(TextSurfSchnake, TextRectSchnake)
         screen.blit(TextSurfSchettings, TextRectSchettings)
+        screen.blit(TextSurfSchcoreboard, TextRectSchcoreboard)
         pygame.display.update()
         clock.tick(15)
         if returnValue is not None:
@@ -222,6 +241,9 @@ def selfCollision(snake, snakeChain):
         if snake.rectPoint[0] == part.rectPoint[0] and snake.rectPoint[1] == part.rectPoint[1]:
             return True
 connection = DBConnect.DBConnect("localhost", "schnake", "schnake", "schnake")
+
+def schcoreboard():
+    return None
 while 1:
     mode = gameIntro()
     if mode is not None:
@@ -230,3 +252,5 @@ while 1:
         elif mode == "Schettings":
             newSpeed = schettings(speed)
             speed = newSpeed
+        elif mode == "Schcoreboard":
+            schcoreboard()

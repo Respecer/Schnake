@@ -12,5 +12,3 @@ class DBConnect:
                 print("Connected to MySQL database")
         except Error as e:
             print(e)
-        finally:
-            self.connection.close()
