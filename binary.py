@@ -77,22 +77,42 @@ def main(speed, score):
         scoreUp(score)
         pygame.display.update()
         if gameOver == True:
-            largeText = pygame.font.Font('freesansbold.ttf', 30)
-            TextSurfGO, TextRectGO = text_objects("Game Over", largeText)
-            TextRectGO.centerx = ((width / 2))
-            TextRectGO.centery = ((200))
-            screen.blit(TextSurfGO, TextRectGO)
-            pygame.display.update()
-            enter = False
-            while enter is not True:
-                for event in pygame.event.get():
-                    if event.type == pygame.QUIT:
-                        pygame.quit()
-                        quit()
-                    elif event.type == KEYDOWN:
-                        if event.key == 13:
-                            enter = True
-            break
+            dbconnection = DBConnect.DBConnect("localhost", "schnake", "schnake", "schnake").connection
+            dbcursor = dbconnection.cursor()
+            query = ("SELECT count(*), min(score_value), score_name FROM scoreboard ORDER BY score_value DESC LIMIT 10")
+            insert = ("INSERT INTO scoreboard(score_name, score_value) VALUES('REN', "+score+")")
+            dbcursor.execute(query)
+            for a in dbcursor:
+                lowestScore = a[1]
+                scoreCount = a[0]
+            if score > lowestScore or scoreCount < 10:
+                largeText = pygame.font.Font('freesansbold.ttf', 30)
+                TextSurfHS, TextRectHS = text_objects("NEW HIGHSCORE", largeText)
+                TextRectHS.centerx = ((width / 2))
+                TextRectHS.centery = ((200))
+                screen.blit(TextSurfHS, TextRectHS)
+
+                pygame.display.update()
+
+                dbconnection.close()
+                dbcursor.close()
+            else:
+                largeText = pygame.font.Font('freesansbold.ttf', 30)
+                TextSurfGO, TextRectGO = text_objects("Game Over", largeText)
+                TextRectGO.centerx = ((width / 2))
+                TextRectGO.centery = ((200))
+                screen.blit(TextSurfGO, TextRectGO)
+                pygame.display.update()
+                enter = False
+                while enter is not True:
+                    for event in pygame.event.get():
+                        if event.type == pygame.QUIT:
+                            pygame.quit()
+                            quit()
+                        elif event.type == KEYDOWN:
+                            if event.key == 13:
+                                enter = True
+                break
 def text_objects(text, font):
     textSurface = font.render(text, True, white)
     return textSurface, textSurface.get_rect()
@@ -107,7 +127,7 @@ def gameIntro():
     TextRectSchettings.centery = ((height / 2))
     TextSurfSchcoreboard, TextRectSchcoreboard = text_objects("Schcoreboard", largeText)
     TextRectSchcoreboard.left = ((width / 4))
-    TextRectSchcoreboard.centery = ((height / 1.5))
+    TextRectSchcoreboard.centery = ((height / 4 * 3))
     menuPoints = ((TextSurfSchnake, TextRectSchnake, "Schnake"), (TextSurfSchettings, TextRectSchettings, "Schettings"), (TextSurfSchcoreboard, TextRectSchcoreboard, "Schcoreboard"))
     cursor = Cursor.Cursor(cursorImage, 10, 10, 25, 25)
     currentCursor = 0
@@ -240,10 +260,44 @@ def selfCollision(snake, snakeChain):
     for part in snakeChain:
         if snake.rectPoint[0] == part.rectPoint[0] and snake.rectPoint[1] == part.rectPoint[1]:
             return True
-connection = DBConnect.DBConnect("localhost", "schnake", "schnake", "schnake")
 
 def schcoreboard():
+    dbconnection = DBConnect.DBConnect("localhost", "schnake", "schnake", "schnake").connection
+    dbcursor = dbconnection.cursor()
+
+    query = ("SELECT * FROM scoreboard ORDER BY score_value DESC LIMIT 10")
+    dbcursor.execute(query)
+    largeText = pygame.font.Font('freesansbold.ttf', 30)
+    screen.fill(black)
+    for index in enumerate(dbcursor):
+
+        Surf, Rect = text_objects(str(index[1][1]), largeText)
+        Rect.centerx = ((width / 2) - 110)
+        Rect.centery = ((height/11)*(1+index[0]))
+        screen.blit(Surf, Rect)
+        Surf, Rect = text_objects("------", largeText)
+        Rect.centerx = ((width / 2))
+        Rect.centery = ((height / 11) * (1 + index[0]))
+        screen.blit(Surf, Rect)
+        Surf, Rect = text_objects(str(index[1][2]), largeText)
+        Rect.centerx = ((width / 2) + 100)
+        Rect.centery = ((height / 11) * (1 + index[0]))
+        screen.blit(Surf, Rect)
+        pygame.display.update()
+
+    dbcursor.close()
+    dbconnection.close()
+    enter = False
+    while enter is not True:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                quit()
+            elif event.type == KEYDOWN:
+                if event.key == 13:
+                    enter = True
     return None
+
 while 1:
     mode = gameIntro()
     if mode is not None:
